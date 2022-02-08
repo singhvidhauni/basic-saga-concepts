@@ -1,24 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
+import Counter from './Counter';
+// import { Provider } from 'react-redux';
+import {createStore, applyMiddleware, compose} from 'redux';
+import createSagaMiddleware from '@redux-saga/core';
+import reducer from './reducer';
+import rootSagas from './saga';
+const sagaMiddleware = createSagaMiddleware();
+//for Debugging redux
+const withDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPONSE__ || compose
+
+export const store = createStore(reducer, withDevTools(applyMiddleware(sagaMiddleware)));
+sagaMiddleware.run(rootSagas);
+
+const action = type => {
+  console.log('action ',type,' store :',store.getState());
+  return store.dispatch({type})
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="App">
+        <Counter 
+          onIncrement={() => action('INCREMENT')} 
+          onDecrement={() => action('DECREMENT')} 
+          onIncrementAsync={() => action('INCREMENT_ASYNC')}/>
+      </div>
   );
 }
 
